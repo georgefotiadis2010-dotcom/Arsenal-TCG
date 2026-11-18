@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+
+[sub_resource type="Gradient" id="Gradient_bg"]
+colors = PackedColorArray(0.07, 0.1, 0.17, 1, 0.03, 0.04, 0.08, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
+gradient = SubResource("Gradient_bg")
+fill = 1
+fill_from = Vector2(0.5, 0.45)
+fill_to = Vector2(0.5, 1.0)
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -11,14 +20,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.07, 0.11, 1)
+texture = SubResource("GradientTexture2D_bg")
+expand_mode = 1
 
 [node name="RootMargin" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -27,24 +37,25 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 20
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 22
 theme_override_constants/margin_bottom = 14
 
 [node name="MainVBox" type="VBoxContainer" parent="RootMargin"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="TopBannerBar" type="PanelContainer" parent="RootMargin/MainVBox"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 
 [node name="BannerMargin" type="MarginContainer" parent="RootMargin/MainVBox/TopBannerBar"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
+theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 16
+theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 6
 
 [node name="BannerHBox" type="HBoxContainer" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin"]
@@ -54,63 +65,79 @@ theme_override_constants/separation = 24
 [node name="TurnBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 17
 text = "ARSENAL TCG  •  TURN 1"
 
 [node name="PhaseBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
-text = "PHASE: PLAYER ACTION"
+theme_override_font_sizes/font_size = 16
+text = "PLAYER ACTION PHASE"
 horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 15
-text = "PLAYER KOs: 0 / 3   |   AI KOs: 0 / 3"
+text = "PLAYER KOs: 0/3   |   AI KOs: 0/3"
 horizontal_alignment = 2
 
 [node name="AIZoneVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="AIStatusInfoLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.78, 0.9, 1)
-theme_override_font_sizes/font_size = 13
-text = "AI Hand: 3/5  |  AI Deck: 8  |  AI Energy: 3/3"
+theme_override_colors/font_color = Color(0.64, 0.74, 0.88, 1)
+theme_override_font_sizes/font_size = 12
+text = "AI OPPONENT  •  Hand: 3/5  •  Deck: 8  •  Energy: 3/3"
 horizontal_alignment = 1
 
 [node name="AIBattleRow" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 20
 alignment = 1
 
 [node name="AICharPanel" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(310, 175)
+custom_minimum_size = Vector2(340, 174)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="AICharTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox"]
+[node name="AICharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(115, 115)
+custom_minimum_size = Vector2(126, 146)
+layout_mode = 2
+
+[node name="AICharTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/AICharArtFrame"]
+unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="AICharEmptyLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/AICharArtFrame"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "NO UNIT"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox"]
 layout_mode = 2
@@ -120,14 +147,14 @@ alignment = 1
 
 [node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.55, 0.55, 1)
+theme_override_colors/font_color = Color(1, 0.48, 0.52, 1)
 theme_override_font_sizes/font_size = 11
 text = "AI ACTIVE CHARACTER"
 
 [node name="AICharNameLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 17
 text = "Cyber Knight"
 
 [node name="AICharAffinityLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
@@ -159,26 +186,40 @@ text = "Base Power: 18"
 
 [node name="AIWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(250, 175)
+custom_minimum_size = Vector2(290, 174)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="AIWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox"]
+[node name="AIWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(92, 92)
+custom_minimum_size = Vector2(106, 146)
+layout_mode = 2
+
+[node name="AIWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/AIWeaponArtFrame"]
+unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="AIWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/AIWeaponArtFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.56, 0.68, 1)
+theme_override_font_sizes/font_size = 11
+text = "EMPTY
+WEAPON"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="WStatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox"]
 layout_mode = 2
@@ -188,7 +229,7 @@ alignment = 1
 
 [node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.65, 0.55, 1)
+theme_override_colors/font_color = Color(1, 0.58, 0.48, 1)
 theme_override_font_sizes/font_size = 11
 text = "AI WEAPON SLOT"
 
@@ -196,7 +237,7 @@ text = "AI WEAPON SLOT"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "[ UNARMED ]"
+text = "Unarmed"
 
 [node name="AIWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
 unique_name_in_owner = true
@@ -223,12 +264,12 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
 theme_override_font_sizes/font_size = 12
-text = "★ AFFINITY MATCH! (1.5x)"
+text = "AFFINITY MATCH! (1.5x)"
 
 [node name="CenterFeedVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
 custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="AffinityBanner" type="PanelContainer" parent="RootMargin/MainVBox/CenterFeedVBox"]
@@ -239,25 +280,37 @@ size_flags_horizontal = 4
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/CenterFeedVBox/AffinityBanner"]
 layout_mode = 2
-theme_override_constants/margin_left = 18
+theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 18
+theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 4
 
 [node name="AffinityBannerLabel" type="Label" parent="RootMargin/MainVBox/CenterFeedVBox/AffinityBanner/Margin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.92, 0.28, 1)
-theme_override_font_sizes/font_size = 15
-text = "★ AFFINITY MATCH! 1.5x DAMAGE! ★"
+theme_override_font_sizes/font_size = 14
+text = "AFFINITY MATCH! 1.5x DAMAGE!"
 horizontal_alignment = 1
 
-[node name="CombatLogLabel" type="Label" parent="RootMargin/MainVBox/CenterFeedVBox"]
+[node name="CombatLogPanel" type="PanelContainer" parent="RootMargin/MainVBox/CenterFeedVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "Match started! Summon a Character from your hand (2 Energy)."
+size_flags_horizontal = 4
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/CenterFeedVBox/CombatLogPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 5
+
+[node name="CombatLogLabel" type="Label" parent="RootMargin/MainVBox/CenterFeedVBox/CombatLogPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "Match started! Summon a Character from your hand (2 EN) and equip a matching Weapon (1 EN)."
 horizontal_alignment = 1
 
 [node name="PlayerBattleRow" type="HBoxContainer" parent="RootMargin/MainVBox"]
@@ -267,26 +320,40 @@ alignment = 1
 
 [node name="PlayerCharPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(310, 180)
+custom_minimum_size = Vector2(340, 178)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="PlayerCharTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox"]
+[node name="PlayerCharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(115, 115)
+custom_minimum_size = Vector2(126, 146)
+layout_mode = 2
+
+[node name="PlayerCharTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/PlayerCharArtFrame"]
+unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="PlayerCharEmptyLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/PlayerCharArtFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.62, 0.82, 1)
+theme_override_font_sizes/font_size = 11
+text = "SUMMON
+CHARACTER"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox"]
 layout_mode = 2
@@ -296,21 +363,21 @@ alignment = 1
 
 [node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.92, 1, 1)
+theme_override_colors/font_color = Color(0.32, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 11
 text = "PLAYER ACTIVE CHARACTER"
 
 [node name="PlayerCharNameLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "[ EMPTY — SUMMON FROM HAND ]"
+theme_override_font_sizes/font_size = 16
+text = "Empty Slot"
 
 [node name="PlayerCharAffinityLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "COST: 2⚡"
+text = "COST: 2 EN"
 
 [node name="PlayerHPBar" type="ProgressBar" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
 unique_name_in_owner = true
@@ -334,26 +401,40 @@ text = "Click a Character card below"
 
 [node name="PlayerWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(250, 180)
+custom_minimum_size = Vector2(290, 178)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
 [node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="PlayerWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox"]
+[node name="PlayerWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(92, 92)
+custom_minimum_size = Vector2(106, 146)
+layout_mode = 2
+
+[node name="PlayerWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/PlayerWeaponArtFrame"]
+unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="PlayerWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/PlayerWeaponArtFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.62, 0.82, 1)
+theme_override_font_sizes/font_size = 11
+text = "EQUIP
+WEAPON"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="WStatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox"]
 layout_mode = 2
@@ -363,21 +444,21 @@ alignment = 1
 
 [node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.92, 1, 1)
+theme_override_colors/font_color = Color(0.32, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 11
 text = "PLAYER WEAPON SLOT"
 
 [node name="PlayerWeaponNameLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "[ UNARMED — EQUIP WEAPON ]"
+theme_override_font_sizes/font_size = 15
+text = "Unarmed"
 
 [node name="PlayerWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "COST: 1⚡"
+text = "COST: 1 EN"
 
 [node name="PlayerWeaponDmgLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
 unique_name_in_owner = true
@@ -398,10 +479,11 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
 theme_override_font_sizes/font_size = 12
-text = "★ AFFINITY MATCH! (1.5x)"
+text = "AFFINITY MATCH! (1.5x)"
 
 [node name="ControlsPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
-custom_minimum_size = Vector2(275, 180)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(290, 178)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel"]
@@ -427,14 +509,14 @@ horizontal_alignment = 1
 [node name="EnergyPipsBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="CostHintLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.76, 0.88, 1)
+theme_override_colors/font_color = Color(0.68, 0.78, 0.9, 1)
 theme_override_font_sizes/font_size = 11
-text = "Summon/Swap: 2⚡  |  Equip: 1⚡  |  Attack: 1⚡"
+text = "Summon: 2 EN  •  Equip: 1 EN  •  Attack: 1 EN"
 horizontal_alignment = 1
 
 [node name="ButtonsHBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
@@ -444,14 +526,14 @@ alignment = 1
 
 [node name="AttackButton" type="Button" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox/ButtonsHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 38)
+custom_minimum_size = Vector2(150, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "ATTACK (1 EN)"
 
 [node name="EndTurnButton" type="Button" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox/ButtonsHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(105, 38)
+custom_minimum_size = Vector2(105, 40)
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "End Turn >>"
@@ -467,13 +549,13 @@ horizontal_alignment = 1
 [node name="HandSectionVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="HandTitleLabel" type="Label" parent="RootMargin/MainVBox/HandSectionVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.82, 0.96, 1)
+theme_override_colors/font_color = Color(0.68, 0.8, 0.95, 1)
 theme_override_font_sizes/font_size = 12
-text = "PLAYER HAND (Click a Character card to Summon/Swap [2⚡] or a Weapon card to Equip [1⚡])"
+text = "YOUR HAND  •  Click a Character card (2 EN) to Summon/Swap or a Weapon card (1 EN) to Equip"
 horizontal_alignment = 1
 
 [node name="HandContainer" type="HBoxContainer" parent="RootMargin/MainVBox/HandSectionVBox"]
@@ -503,6 +585,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ModalPanel" type="PanelContainer" parent="GameOverOverlay/CenterContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(460, 220)
 layout_mode = 2
 

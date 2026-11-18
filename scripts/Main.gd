@@ -75,15 +75,19 @@ var ai_planned_char: CharacterCard = null
 var ai_planned_weapon: WeaponCard = null
 
 # UI Node References (bound from Main.tscn)
+@onready var top_banner_bar: PanelContainer = %TopBannerBar
 @onready var turn_banner_label: Label = %TurnBannerLabel
 @onready var phase_banner_label: Label = %PhaseBannerLabel
 @onready var score_label: Label = %ScoreLabel
+@onready var combat_log_panel: PanelContainer = %CombatLogPanel
 @onready var combat_log_label: Label = %CombatLogLabel
 @onready var affinity_banner: PanelContainer = %AffinityBanner
 @onready var affinity_banner_label: Label = %AffinityBannerLabel
 
 # AI Slot UI References
 @onready var ai_char_panel: PanelContainer = %AICharPanel
+@onready var ai_char_art_frame: PanelContainer = %AICharArtFrame
+@onready var ai_char_empty_label: Label = %AICharEmptyLabel
 @onready var ai_char_name_label: Label = %AICharNameLabel
 @onready var ai_char_affinity_label: Label = %AICharAffinityLabel
 @onready var ai_char_texture: TextureRect = %AICharTexture
@@ -92,6 +96,8 @@ var ai_planned_weapon: WeaponCard = null
 @onready var ai_power_label: Label = %AIPowerLabel
 
 @onready var ai_weapon_panel: PanelContainer = %AIWeaponPanel
+@onready var ai_weapon_art_frame: PanelContainer = %AIWeaponArtFrame
+@onready var ai_weapon_empty_label: Label = %AIWeaponEmptyLabel
 @onready var ai_weapon_name_label: Label = %AIWeaponNameLabel
 @onready var ai_weapon_class_label: Label = %AIWeaponClassLabel
 @onready var ai_weapon_texture: TextureRect = %AIWeaponTexture
@@ -102,6 +108,8 @@ var ai_planned_weapon: WeaponCard = null
 
 # Player Slot UI References
 @onready var player_char_panel: PanelContainer = %PlayerCharPanel
+@onready var player_char_art_frame: PanelContainer = %PlayerCharArtFrame
+@onready var player_char_empty_label: Label = %PlayerCharEmptyLabel
 @onready var player_char_name_label: Label = %PlayerCharNameLabel
 @onready var player_char_affinity_label: Label = %PlayerCharAffinityLabel
 @onready var player_char_texture: TextureRect = %PlayerCharTexture
@@ -110,6 +118,8 @@ var ai_planned_weapon: WeaponCard = null
 @onready var player_power_label: Label = %PlayerPowerLabel
 
 @onready var player_weapon_panel: PanelContainer = %PlayerWeaponPanel
+@onready var player_weapon_art_frame: PanelContainer = %PlayerWeaponArtFrame
+@onready var player_weapon_empty_label: Label = %PlayerWeaponEmptyLabel
 @onready var player_weapon_name_label: Label = %PlayerWeaponNameLabel
 @onready var player_weapon_class_label: Label = %PlayerWeaponClassLabel
 @onready var player_weapon_texture: TextureRect = %PlayerWeaponTexture
@@ -118,6 +128,7 @@ var ai_planned_weapon: WeaponCard = null
 @onready var player_affinity_badge: Label = %PlayerAffinityBadge
 
 # Controls & Hand UI References
+@onready var controls_panel: PanelContainer = %ControlsPanel
 @onready var energy_value_label: Label = %EnergyValueLabel
 @onready var energy_pips_box: HBoxContainer = %EnergyPipsBox
 @onready var deck_info_label: Label = %DeckInfoLabel
@@ -127,6 +138,7 @@ var ai_planned_weapon: WeaponCard = null
 
 # Game Over Overlay References
 @onready var game_over_overlay: ColorRect = %GameOverOverlay
+@onready var modal_panel: PanelContainer = %ModalPanel
 @onready var game_over_title: Label = %GameOverTitle
 @onready var game_over_subtitle: Label = %GameOverSubtitle
 @onready var restart_button: Button = %RestartButton
@@ -687,7 +699,7 @@ func _trigger_game_over(player_won: bool, reason: String) -> void:
 
 
 func _show_affinity_match_indicator(message: String) -> void:
-	affinity_banner_label.text = "★ " + message + " ★"
+	affinity_banner_label.text = ":: " + message + " ::"
 	affinity_banner.visible = true
 	affinity_banner.modulate = Color(1, 1, 1, 1)
 	affinity_banner.scale = Vector2(0.92, 0.92)
@@ -760,15 +772,19 @@ func _update_all_ui() -> void:
 		ai_char_affinity_label.text = ai_active_char.get_affinity_label()
 		ai_char_affinity_label.modulate = _get_affinity_color(int(ai_active_char.affinity))
 		ai_char_texture.texture = ai_active_char.texture
+		ai_char_empty_label.visible = false
+		_style_art_frame(ai_char_art_frame, _get_affinity_color(int(ai_active_char.affinity)), true)
 		ai_hp_bar.max_value = ai_active_char.max_hp
 		ai_hp_bar.value = ai_char_hp
 		ai_hp_label.text = "HP: %d / %d" % [ai_char_hp, ai_active_char.max_hp]
 		ai_power_label.text = "Base Power: %d" % ai_active_char.power
 	else:
-		ai_char_name_label.text = "[ NO ACTIVE CHARACTER ]"
+		ai_char_name_label.text = "No Active Character"
 		ai_char_affinity_label.text = "KO'd"
 		ai_char_affinity_label.modulate = Color(0.6, 0.6, 0.6)
 		ai_char_texture.texture = null
+		ai_char_empty_label.visible = true
+		_style_art_frame(ai_char_art_frame, Color(0.35, 0.25, 0.28), false)
 		ai_hp_bar.max_value = 100
 		ai_hp_bar.value = 0
 		ai_hp_label.text = "HP: 0 / 0"
@@ -779,12 +795,16 @@ func _update_all_ui() -> void:
 		ai_weapon_class_label.text = ai_active_weapon.get_class_label()
 		ai_weapon_class_label.modulate = _get_affinity_color(int(ai_active_weapon.weapon_class))
 		ai_weapon_texture.texture = ai_active_weapon.texture
+		ai_weapon_empty_label.visible = false
+		_style_art_frame(ai_weapon_art_frame, _get_affinity_color(int(ai_active_weapon.weapon_class)), true)
 		ai_weapon_dmg_label.text = "+%d Weapon DMG" % ai_active_weapon.damage
 	else:
-		ai_weapon_name_label.text = "[ UNARMED ]"
+		ai_weapon_name_label.text = "Unarmed"
 		ai_weapon_class_label.text = "NO WEAPON"
 		ai_weapon_class_label.modulate = Color(0.55, 0.58, 0.65)
 		ai_weapon_texture.texture = null
+		ai_weapon_empty_label.visible = true
+		_style_art_frame(ai_weapon_art_frame, Color(0.28, 0.32, 0.42), false)
 		ai_weapon_dmg_label.text = "+0 Weapon DMG"
 
 	var ai_combat: Dictionary = calculate_combat_damage(ai_active_char, ai_active_weapon)
@@ -797,15 +817,19 @@ func _update_all_ui() -> void:
 		player_char_affinity_label.text = player_active_char.get_affinity_label()
 		player_char_affinity_label.modulate = _get_affinity_color(int(player_active_char.affinity))
 		player_char_texture.texture = player_active_char.texture
+		player_char_empty_label.visible = false
+		_style_art_frame(player_char_art_frame, _get_affinity_color(int(player_active_char.affinity)), true)
 		player_hp_bar.max_value = player_active_char.max_hp
 		player_hp_bar.value = player_char_hp
 		player_hp_label.text = "HP: %d / %d" % [player_char_hp, player_active_char.max_hp]
 		player_power_label.text = "Base Power: %d" % player_active_char.power
 	else:
-		player_char_name_label.text = "[ EMPTY — SUMMON FROM HAND ]"
-		player_char_affinity_label.text = "COST: 2⚡"
+		player_char_name_label.text = "Empty Slot"
+		player_char_affinity_label.text = "COST: 2 EN"
 		player_char_affinity_label.modulate = Color(1.0, 0.85, 0.35)
 		player_char_texture.texture = null
+		player_char_empty_label.visible = true
+		_style_art_frame(player_char_art_frame, Color(0.22, 0.36, 0.56), false)
 		player_hp_bar.max_value = 100
 		player_hp_bar.value = 0
 		player_hp_label.text = "HP: -- / --"
@@ -816,12 +840,16 @@ func _update_all_ui() -> void:
 		player_weapon_class_label.text = player_active_weapon.get_class_label()
 		player_weapon_class_label.modulate = _get_affinity_color(int(player_active_weapon.weapon_class))
 		player_weapon_texture.texture = player_active_weapon.texture
+		player_weapon_empty_label.visible = false
+		_style_art_frame(player_weapon_art_frame, _get_affinity_color(int(player_active_weapon.weapon_class)), true)
 		player_weapon_dmg_label.text = "+%d Weapon DMG" % player_active_weapon.damage
 	else:
-		player_weapon_name_label.text = "[ UNARMED — EQUIP WEAPON ]"
-		player_weapon_class_label.text = "COST: 1⚡"
+		player_weapon_name_label.text = "Unarmed"
+		player_weapon_class_label.text = "COST: 1 EN"
 		player_weapon_class_label.modulate = Color(0.65, 0.75, 0.85)
 		player_weapon_texture.texture = null
+		player_weapon_empty_label.visible = true
+		_style_art_frame(player_weapon_art_frame, Color(0.22, 0.36, 0.56), false)
 		player_weapon_dmg_label.text = "+0 Weapon DMG"
 
 	var player_combat: Dictionary = calculate_combat_damage(player_active_char, player_active_weapon)
@@ -904,26 +932,26 @@ func _rebuild_hand_ui() -> void:
 			would_match_affinity = aff_val == int(player_active_weapon.weapon_class)
 
 		var card_btn: Button = Button.new()
-		card_btn.custom_minimum_size = Vector2(174, 212)
+		card_btn.custom_minimum_size = Vector2(182, 224)
 		card_btn.disabled = not can_play
 		card_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if can_play else Control.CURSOR_ARROW
 
 		var normal_style: StyleBoxFlat = StyleBoxFlat.new()
-		normal_style.bg_color = Color(0.10, 0.14, 0.22, 0.96)
-		normal_style.set_corner_radius_all(10)
+		normal_style.bg_color = Color(0.09, 0.12, 0.20, 0.98)
+		normal_style.set_corner_radius_all(12)
 		normal_style.set_border_width_all(2)
 		if would_match_affinity and can_play:
 			normal_style.border_color = Color(1.0, 0.84, 0.25)
 		else:
-			normal_style.border_color = aff_color if can_play else Color(0.24, 0.28, 0.36)
+			normal_style.border_color = aff_color if can_play else Color(0.22, 0.26, 0.34)
 
 		var hover_style: StyleBoxFlat = normal_style.duplicate()
-		hover_style.bg_color = Color(0.15, 0.21, 0.32, 1.0)
-		hover_style.border_color = Color(1.0, 0.92, 0.45) if would_match_affinity else aff_color.lightened(0.25)
+		hover_style.bg_color = Color(0.14, 0.19, 0.30, 1.0)
+		hover_style.border_color = Color(1.0, 0.92, 0.45) if would_match_affinity else aff_color.lightened(0.28)
 
 		var disabled_style: StyleBoxFlat = normal_style.duplicate()
-		disabled_style.bg_color = Color(0.07, 0.09, 0.13, 0.72)
-		disabled_style.border_color = Color(0.20, 0.22, 0.28, 0.6)
+		disabled_style.bg_color = Color(0.06, 0.08, 0.12, 0.78)
+		disabled_style.border_color = Color(0.20, 0.23, 0.30, 0.65)
 
 		card_btn.add_theme_stylebox_override("normal", normal_style)
 		card_btn.add_theme_stylebox_override("hover", hover_style)
@@ -941,35 +969,63 @@ func _rebuild_hand_ui() -> void:
 
 		var vbox: VBoxContainer = VBoxContainer.new()
 		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_theme_constant_override("separation", 4)
+		vbox.add_theme_constant_override("separation", 5)
 		margin.add_child(vbox)
 
-		# Top row: Type + Energy Cost
+		# Top row: Type + Energy Cost Pill
 		var top_row: HBoxContainer = HBoxContainer.new()
 		top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(top_row)
 
 		var type_lbl: Label = Label.new()
 		type_lbl.text = "CHARACTER" if is_char else "WEAPON"
-		type_lbl.add_theme_font_size_override("font_size", 11)
-		type_lbl.modulate = Color(0.72, 0.80, 0.92)
+		type_lbl.add_theme_font_size_override("font_size", 10)
+		type_lbl.modulate = Color(0.66, 0.76, 0.90)
 		type_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		top_row.add_child(type_lbl)
 
-		var cost_lbl: Label = Label.new()
-		cost_lbl.text = "%d⚡" % cost
-		cost_lbl.add_theme_font_size_override("font_size", 13)
-		cost_lbl.modulate = Color(0.25, 0.92, 1.0) if player_energy >= cost else Color(1.0, 0.42, 0.42)
-		top_row.add_child(cost_lbl)
+		var cost_pill: PanelContainer = PanelContainer.new()
+		cost_pill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var cost_style: StyleBoxFlat = StyleBoxFlat.new()
+		cost_style.bg_color = Color(0.10, 0.24, 0.34, 0.95) if player_energy >= cost else Color(0.28, 0.10, 0.14, 0.95)
+		cost_style.border_color = Color(0.28, 0.88, 1.0) if player_energy >= cost else Color(1.0, 0.42, 0.42)
+		cost_style.set_border_width_all(1)
+		cost_style.set_corner_radius_all(6)
+		cost_style.content_margin_left = 6
+		cost_style.content_margin_right = 6
+		cost_style.content_margin_top = 1
+		cost_style.content_margin_bottom = 1
+		cost_pill.add_theme_stylebox_override("panel", cost_style)
+		top_row.add_child(cost_pill)
 
-		# Sprite Thumbnail
+		var cost_lbl: Label = Label.new()
+		cost_lbl.text = "%d EN" % cost
+		cost_lbl.add_theme_font_size_override("font_size", 11)
+		cost_lbl.modulate = Color(0.45, 0.95, 1.0) if player_energy >= cost else Color(1.0, 0.52, 0.52)
+		cost_pill.add_child(cost_lbl)
+
+		# Framed Artwork Window
+		var art_frame: PanelContainer = PanelContainer.new()
+		art_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art_frame.custom_minimum_size = Vector2(0, 108)
+		var art_style: StyleBoxFlat = StyleBoxFlat.new()
+		art_style.bg_color = Color(aff_color.r * 0.14, aff_color.g * 0.14, aff_color.b * 0.18, 0.95)
+		art_style.border_color = Color(aff_color.r * 0.65, aff_color.g * 0.65, aff_color.b * 0.65, 0.7)
+		art_style.set_border_width_all(1)
+		art_style.set_corner_radius_all(8)
+		art_style.content_margin_left = 4
+		art_style.content_margin_right = 4
+		art_style.content_margin_top = 4
+		art_style.content_margin_bottom = 4
+		art_frame.add_theme_stylebox_override("panel", art_style)
+		vbox.add_child(art_frame)
+
 		var tex_rect: TextureRect = TextureRect.new()
 		tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		tex_rect.custom_minimum_size = Vector2(96, 86)
 		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex_rect.texture = (card as CharacterCard).texture if is_char else (card as WeaponCard).texture
-		vbox.add_child(tex_rect)
+		art_frame.add_child(tex_rect)
 
 		# Card Name
 		var name_lbl: Label = Label.new()
@@ -981,8 +1037,8 @@ func _rebuild_hand_ui() -> void:
 		# Affinity / WeaponClass Tag
 		var aff_tag: Label = Label.new()
 		if would_match_affinity:
-			aff_tag.text = "★ %s (1.5x MATCH)" % aff_label
-			aff_tag.modulate = Color(1.0, 0.86, 0.28)
+			aff_tag.text = "%s  •  1.5x MATCH!" % aff_label
+			aff_tag.modulate = Color(1.0, 0.88, 0.30)
 		else:
 			aff_tag.text = aff_label
 			aff_tag.modulate = aff_color
@@ -994,7 +1050,7 @@ func _rebuild_hand_ui() -> void:
 		var stats_lbl: Label = Label.new()
 		if is_char:
 			var cc: CharacterCard = card as CharacterCard
-			stats_lbl.text = "HP %d  •  PWR %d" % [cc.max_hp, cc.power]
+			stats_lbl.text = "HP %d  |  PWR %d" % [cc.max_hp, cc.power]
 		else:
 			var wc: WeaponCard = card as WeaponCard
 			stats_lbl.text = "DMG +%d" % wc.damage
@@ -1008,20 +1064,98 @@ func _rebuild_hand_ui() -> void:
 		hand_container.add_child(card_btn)
 
 
+func _style_art_frame(frame: PanelContainer, accent: Color, is_filled: bool) -> void:
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	if is_filled:
+		style.bg_color = Color(accent.r * 0.14, accent.g * 0.14, accent.b * 0.18, 0.95)
+		style.border_color = Color(accent.r * 0.75, accent.g * 0.75, accent.b * 0.75, 0.85)
+	else:
+		style.bg_color = Color(0.05, 0.07, 0.11, 0.85)
+		style.border_color = Color(accent.r * 0.5, accent.g * 0.5, accent.b * 0.5, 0.45)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 4
+	style.content_margin_right = 4
+	style.content_margin_top = 4
+	style.content_margin_bottom = 4
+	frame.add_theme_stylebox_override("panel", style)
+
+
+func _style_action_button(btn: Button, bg: Color, border: Color) -> void:
+	var normal: StyleBoxFlat = StyleBoxFlat.new()
+	normal.bg_color = bg
+	normal.border_color = border
+	normal.set_border_width_all(2)
+	normal.set_corner_radius_all(8)
+
+	var hover: StyleBoxFlat = normal.duplicate()
+	hover.bg_color = bg.lightened(0.14)
+	hover.border_color = border.lightened(0.22)
+
+	var disabled: StyleBoxFlat = normal.duplicate()
+	disabled.bg_color = Color(0.08, 0.10, 0.14, 0.70)
+	disabled.border_color = Color(0.20, 0.23, 0.30, 0.55)
+
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_stylebox_override("pressed", hover)
+	btn.add_theme_stylebox_override("disabled", disabled)
+
+
 func _apply_theme_styles() -> void:
-	var slot_panels: Array[PanelContainer] = [
-		ai_char_panel,
-		ai_weapon_panel,
-		player_char_panel,
-		player_weapon_panel
-	]
-	for panel in slot_panels:
+	# Header Bar
+	var header_style: StyleBoxFlat = StyleBoxFlat.new()
+	header_style.bg_color = Color(0.07, 0.10, 0.17, 0.96)
+	header_style.border_color = Color(0.20, 0.30, 0.48, 0.85)
+	header_style.set_border_width_all(1)
+	header_style.set_corner_radius_all(10)
+	top_banner_bar.add_theme_stylebox_override("panel", header_style)
+
+	# Combat Log Pill
+	var log_style: StyleBoxFlat = StyleBoxFlat.new()
+	log_style.bg_color = Color(0.07, 0.10, 0.16, 0.90)
+	log_style.border_color = Color(0.22, 0.32, 0.48, 0.65)
+	log_style.set_border_width_all(1)
+	log_style.set_corner_radius_all(8)
+	combat_log_panel.add_theme_stylebox_override("panel", log_style)
+
+	# AI & Player Slot Panels
+	for panel in [ai_char_panel, ai_weapon_panel]:
 		var style: StyleBoxFlat = StyleBoxFlat.new()
-		style.bg_color = Color(0.09, 0.12, 0.19, 0.95)
-		style.border_color = Color(0.24, 0.36, 0.54)
+		style.bg_color = Color(0.08, 0.10, 0.17, 0.96)
+		style.border_color = Color(0.48, 0.24, 0.30, 0.90)
 		style.set_border_width_all(2)
-		style.set_corner_radius_all(10)
+		style.set_corner_radius_all(12)
 		panel.add_theme_stylebox_override("panel", style)
+
+	for panel in [player_char_panel, player_weapon_panel]:
+		var style: StyleBoxFlat = StyleBoxFlat.new()
+		style.bg_color = Color(0.08, 0.11, 0.19, 0.96)
+		style.border_color = Color(0.22, 0.42, 0.64, 0.90)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(12)
+		panel.add_theme_stylebox_override("panel", style)
+
+	# Command / Energy Controls Panel
+	var ctrl_style: StyleBoxFlat = StyleBoxFlat.new()
+	ctrl_style.bg_color = Color(0.07, 0.10, 0.17, 0.96)
+	ctrl_style.border_color = Color(0.20, 0.34, 0.52, 0.85)
+	ctrl_style.set_border_width_all(2)
+	ctrl_style.set_corner_radius_all(12)
+	controls_panel.add_theme_stylebox_override("panel", ctrl_style)
+
+	# Action Buttons
+	_style_action_button(attack_button, Color(0.14, 0.44, 0.32), Color(0.28, 0.88, 0.56))
+	_style_action_button(end_turn_button, Color(0.16, 0.24, 0.38), Color(0.38, 0.58, 0.86))
+	_style_action_button(restart_button, Color(0.16, 0.36, 0.54), Color(0.32, 0.82, 1.0))
+
+	# Game Over Modal
+	var modal_style: StyleBoxFlat = StyleBoxFlat.new()
+	modal_style.bg_color = Color(0.08, 0.11, 0.18, 0.98)
+	modal_style.border_color = Color(0.32, 0.68, 0.96)
+	modal_style.set_border_width_all(2)
+	modal_style.set_corner_radius_all(14)
+	modal_panel.add_theme_stylebox_override("panel", modal_style)
 
 	var banner_style: StyleBoxFlat = StyleBoxFlat.new()
 	banner_style.bg_color = Color(0.22, 0.16, 0.04, 0.96)
