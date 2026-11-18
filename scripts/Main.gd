@@ -85,6 +85,8 @@ var ai_planned_weapon: WeaponCard = null
 @onready var affinity_banner_label: Label = %AffinityBannerLabel
 
 # AI Slot UI References
+@onready var ai_info_panel: PanelContainer = %AIInfoPanel
+@onready var ai_total_atk_panel: PanelContainer = %AITotalAtkPanel
 @onready var ai_char_panel: PanelContainer = %AICharPanel
 @onready var ai_char_art_frame: PanelContainer = %AICharArtFrame
 @onready var ai_char_empty_label: Label = %AICharEmptyLabel
@@ -107,6 +109,8 @@ var ai_planned_weapon: WeaponCard = null
 @onready var ai_status_info_label: Label = %AIStatusInfoLabel
 
 # Player Slot UI References
+@onready var player_info_panel: PanelContainer = %PlayerInfoPanel
+@onready var player_total_atk_panel: PanelContainer = %PlayerTotalAtkPanel
 @onready var player_char_panel: PanelContainer = %PlayerCharPanel
 @onready var player_char_art_frame: PanelContainer = %PlayerCharArtFrame
 @onready var player_char_empty_label: Label = %PlayerCharEmptyLabel
@@ -129,6 +133,7 @@ var ai_planned_weapon: WeaponCard = null
 
 # Controls & Hand UI References
 @onready var controls_panel: PanelContainer = %ControlsPanel
+@onready var hand_tray_panel: PanelContainer = %HandTrayPanel
 @onready var energy_value_label: Label = %EnergyValueLabel
 @onready var energy_pips_box: HBoxContainer = %EnergyPipsBox
 @onready var deck_info_label: Label = %DeckInfoLabel
@@ -759,7 +764,7 @@ func _update_all_ui() -> void:
 	]
 
 	# AI Status & Active Slots
-	ai_status_info_label.text = "AI Hand: %d/%d  |  AI Deck: %d  |  AI Energy: %d/%d" % [
+	ai_status_info_label.text = "Hand: %d / %d\nDeck: %d cards\nEnergy: %d / %d" % [
 		ai_hand.size(),
 		MAX_HAND_SIZE,
 		ai_deck.size(),
@@ -776,19 +781,19 @@ func _update_all_ui() -> void:
 		_style_art_frame(ai_char_art_frame, _get_affinity_color(int(ai_active_char.affinity)), true)
 		ai_hp_bar.max_value = ai_active_char.max_hp
 		ai_hp_bar.value = ai_char_hp
-		ai_hp_label.text = "HP: %d / %d" % [ai_char_hp, ai_active_char.max_hp]
-		ai_power_label.text = "Base Power: %d" % ai_active_char.power
+		ai_hp_label.text = "%d / %d HP" % [ai_char_hp, ai_active_char.max_hp]
+		ai_power_label.text = "BASE PWR: %d" % ai_active_char.power
 	else:
-		ai_char_name_label.text = "No Active Character"
-		ai_char_affinity_label.text = "KO'd"
+		ai_char_name_label.text = "No Unit"
+		ai_char_affinity_label.text = "KO'D"
 		ai_char_affinity_label.modulate = Color(0.6, 0.6, 0.6)
 		ai_char_texture.texture = null
 		ai_char_empty_label.visible = true
 		_style_art_frame(ai_char_art_frame, Color(0.35, 0.25, 0.28), false)
 		ai_hp_bar.max_value = 100
 		ai_hp_bar.value = 0
-		ai_hp_label.text = "HP: 0 / 0"
-		ai_power_label.text = "Base Power: --"
+		ai_hp_label.text = "0 / 0 HP"
+		ai_power_label.text = "BASE PWR: --"
 
 	if ai_active_weapon != null:
 		ai_weapon_name_label.text = ai_active_weapon.card_name
@@ -797,15 +802,15 @@ func _update_all_ui() -> void:
 		ai_weapon_texture.texture = ai_active_weapon.texture
 		ai_weapon_empty_label.visible = false
 		_style_art_frame(ai_weapon_art_frame, _get_affinity_color(int(ai_active_weapon.weapon_class)), true)
-		ai_weapon_dmg_label.text = "+%d Weapon DMG" % ai_active_weapon.damage
+		ai_weapon_dmg_label.text = "+%d DMG" % ai_active_weapon.damage
 	else:
 		ai_weapon_name_label.text = "Unarmed"
-		ai_weapon_class_label.text = "NO WEAPON"
+		ai_weapon_class_label.text = "--"
 		ai_weapon_class_label.modulate = Color(0.55, 0.58, 0.65)
 		ai_weapon_texture.texture = null
 		ai_weapon_empty_label.visible = true
 		_style_art_frame(ai_weapon_art_frame, Color(0.28, 0.32, 0.42), false)
-		ai_weapon_dmg_label.text = "+0 Weapon DMG"
+		ai_weapon_dmg_label.text = "+0 DMG"
 
 	var ai_combat: Dictionary = calculate_combat_damage(ai_active_char, ai_active_weapon)
 	ai_total_atk_label.text = "TOTAL ATK: %d" % ai_combat["total"]
@@ -821,19 +826,19 @@ func _update_all_ui() -> void:
 		_style_art_frame(player_char_art_frame, _get_affinity_color(int(player_active_char.affinity)), true)
 		player_hp_bar.max_value = player_active_char.max_hp
 		player_hp_bar.value = player_char_hp
-		player_hp_label.text = "HP: %d / %d" % [player_char_hp, player_active_char.max_hp]
-		player_power_label.text = "Base Power: %d" % player_active_char.power
+		player_hp_label.text = "%d / %d HP" % [player_char_hp, player_active_char.max_hp]
+		player_power_label.text = "BASE PWR: %d" % player_active_char.power
 	else:
 		player_char_name_label.text = "Empty Slot"
-		player_char_affinity_label.text = "COST: 2 EN"
+		player_char_affinity_label.text = "2 EN"
 		player_char_affinity_label.modulate = Color(1.0, 0.85, 0.35)
 		player_char_texture.texture = null
 		player_char_empty_label.visible = true
 		_style_art_frame(player_char_art_frame, Color(0.22, 0.36, 0.56), false)
 		player_hp_bar.max_value = 100
 		player_hp_bar.value = 0
-		player_hp_label.text = "HP: -- / --"
-		player_power_label.text = "Click a Character card below"
+		player_hp_label.text = "-- / -- HP"
+		player_power_label.text = "BASE PWR: --"
 
 	if player_active_weapon != null:
 		player_weapon_name_label.text = player_active_weapon.card_name
@@ -842,15 +847,15 @@ func _update_all_ui() -> void:
 		player_weapon_texture.texture = player_active_weapon.texture
 		player_weapon_empty_label.visible = false
 		_style_art_frame(player_weapon_art_frame, _get_affinity_color(int(player_active_weapon.weapon_class)), true)
-		player_weapon_dmg_label.text = "+%d Weapon DMG" % player_active_weapon.damage
+		player_weapon_dmg_label.text = "+%d DMG" % player_active_weapon.damage
 	else:
 		player_weapon_name_label.text = "Unarmed"
-		player_weapon_class_label.text = "COST: 1 EN"
+		player_weapon_class_label.text = "1 EN"
 		player_weapon_class_label.modulate = Color(0.65, 0.75, 0.85)
 		player_weapon_texture.texture = null
 		player_weapon_empty_label.visible = true
 		_style_art_frame(player_weapon_art_frame, Color(0.22, 0.36, 0.56), false)
-		player_weapon_dmg_label.text = "+0 Weapon DMG"
+		player_weapon_dmg_label.text = "+0 DMG"
 
 	var player_combat: Dictionary = calculate_combat_damage(player_active_char, player_active_weapon)
 	player_total_atk_label.text = "TOTAL ATK: %d" % player_combat["total"]
@@ -860,7 +865,7 @@ func _update_all_ui() -> void:
 	energy_value_label.text = "ENERGY: %d / %d" % [player_energy, player_max_energy]
 	_rebuild_energy_pips()
 
-	deck_info_label.text = "Hand: %d / %d   |   Deck: %d cards" % [
+	deck_info_label.text = "Hand: %d / %d\nDeck: %d cards" % [
 		player_hand.size(),
 		MAX_HAND_SIZE,
 		player_deck.size()
@@ -932,9 +937,20 @@ func _rebuild_hand_ui() -> void:
 			would_match_affinity = aff_val == int(player_active_weapon.weapon_class)
 
 		var card_btn: Button = Button.new()
-		card_btn.custom_minimum_size = Vector2(182, 224)
+		card_btn.custom_minimum_size = Vector2(166, 194)
+		card_btn.pivot_offset = Vector2(83, 97)
 		card_btn.disabled = not can_play
 		card_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if can_play else Control.CURSOR_ARROW
+
+		if can_play:
+			card_btn.mouse_entered.connect(func() -> void:
+				var tw: Tween = card_btn.create_tween()
+				tw.tween_property(card_btn, "scale", Vector2(1.06, 1.06), 0.10).set_ease(Tween.EASE_OUT)
+			)
+			card_btn.mouse_exited.connect(func() -> void:
+				var tw: Tween = card_btn.create_tween()
+				tw.tween_property(card_btn, "scale", Vector2(1.0, 1.0), 0.10).set_ease(Tween.EASE_OUT)
+			)
 
 		var normal_style: StyleBoxFlat = StyleBoxFlat.new()
 		normal_style.bg_color = Color(0.09, 0.12, 0.20, 0.98)
@@ -1007,7 +1023,7 @@ func _rebuild_hand_ui() -> void:
 		# Framed Artwork Window
 		var art_frame: PanelContainer = PanelContainer.new()
 		art_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		art_frame.custom_minimum_size = Vector2(0, 108)
+		art_frame.custom_minimum_size = Vector2(0, 92)
 		var art_style: StyleBoxFlat = StyleBoxFlat.new()
 		art_style.bg_color = Color(aff_color.r * 0.14, aff_color.g * 0.14, aff_color.b * 0.18, 0.95)
 		art_style.border_color = Color(aff_color.r * 0.65, aff_color.g * 0.65, aff_color.b * 0.65, 0.7)
@@ -1138,11 +1154,37 @@ func _apply_theme_styles() -> void:
 
 	# Command / Energy Controls Panel
 	var ctrl_style: StyleBoxFlat = StyleBoxFlat.new()
-	ctrl_style.bg_color = Color(0.07, 0.10, 0.17, 0.96)
-	ctrl_style.border_color = Color(0.20, 0.34, 0.52, 0.85)
+	ctrl_style.bg_color = Color(0.06, 0.09, 0.16, 0.94)
+	ctrl_style.border_color = Color(0.22, 0.36, 0.56, 0.85)
 	ctrl_style.set_border_width_all(2)
-	ctrl_style.set_corner_radius_all(12)
+	ctrl_style.set_corner_radius_all(14)
 	controls_panel.add_theme_stylebox_override("panel", ctrl_style)
+
+	# Side Info & Total ATK Panels
+	for info_p in [ai_info_panel, player_info_panel]:
+		var is_ai: bool = info_p == ai_info_panel
+		var ip_style: StyleBoxFlat = StyleBoxFlat.new()
+		ip_style.bg_color = Color(0.06, 0.09, 0.15, 0.88)
+		ip_style.border_color = Color(0.45, 0.24, 0.30, 0.75) if is_ai else Color(0.20, 0.38, 0.58, 0.75)
+		ip_style.set_border_width_all(1)
+		ip_style.set_corner_radius_all(10)
+		info_p.add_theme_stylebox_override("panel", ip_style)
+
+	for atk_p in [ai_total_atk_panel, player_total_atk_panel]:
+		var ap_style: StyleBoxFlat = StyleBoxFlat.new()
+		ap_style.bg_color = Color(0.11, 0.14, 0.22, 0.95)
+		ap_style.border_color = Color(0.85, 0.68, 0.24, 0.65)
+		ap_style.set_border_width_all(1)
+		ap_style.set_corner_radius_all(6)
+		atk_p.add_theme_stylebox_override("panel", ap_style)
+
+	# Bottom Hand Tray
+	var tray_style: StyleBoxFlat = StyleBoxFlat.new()
+	tray_style.bg_color = Color(0.04, 0.06, 0.11, 0.86)
+	tray_style.border_color = Color(0.18, 0.30, 0.48, 0.75)
+	tray_style.set_border_width_all(1)
+	tray_style.set_corner_radius_all(14)
+	hand_tray_panel.add_theme_stylebox_override("panel", tray_style)
 
 	# Action Buttons
 	_style_action_button(attack_button, Color(0.14, 0.44, 0.32), Color(0.28, 0.88, 0.56))

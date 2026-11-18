@@ -1,15 +1,14 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
+[ext_resource type="Shader" path="res://shaders/arena_bg.gdshader" id="2_shader"]
 
-[sub_resource type="Gradient" id="Gradient_bg"]
-colors = PackedColorArray(0.07, 0.1, 0.17, 1, 0.03, 0.04, 0.08, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_bg"]
-gradient = SubResource("Gradient_bg")
-fill = 1
-fill_from = Vector2(0.5, 0.45)
-fill_to = Vector2(0.5, 1.0)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
+shader = ExtResource("2_shader")
+shader_parameter/color_top = Color(0.08, 0.04, 0.08, 1)
+shader_parameter/color_mid = Color(0.04, 0.06, 0.12, 1)
+shader_parameter/color_bot = Color(0.03, 0.07, 0.14, 1)
+shader_parameter/resolution = Vector2(1280, 800)
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -20,15 +19,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_bg")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = SubResource("GradientTexture2D_bg")
-expand_mode = 1
 
 [node name="RootMargin" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -37,275 +35,335 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 22
+theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 14
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
 
 [node name="MainVBox" type="VBoxContainer" parent="RootMargin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="TopBannerBar" type="PanelContainer" parent="RootMargin/MainVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 
-[node name="BannerMargin" type="MarginContainer" parent="RootMargin/MainVBox/TopBannerBar"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/TopBannerBar"]
 layout_mode = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 6
 
-[node name="BannerHBox" type="HBoxContainer" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin"]
+[node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/TopBannerBar/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 20
 
-[node name="TurnBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
+[node name="TurnBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 17
-text = "ARSENAL TCG  •  TURN 1"
+theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "ARSENAL TCG  //  TURN 1"
 
-[node name="PhaseBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
+[node name="PhaseBannerLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "PLAYER ACTION PHASE"
 horizontal_alignment = 1
 
-[node name="ScoreLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/BannerMargin/BannerHBox"]
+[node name="ScoreLabel" type="Label" parent="RootMargin/MainVBox/TopBannerBar/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.82, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = "PLAYER KOs: 0/3   |   AI KOs: 0/3"
+theme_override_colors/font_color = Color(0.78, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "KOs: YOU 0/3  -  AI 0/3"
 horizontal_alignment = 2
 
-[node name="AIZoneVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
+[node name="ArenaHBox" type="HBoxContainer" parent="RootMargin/MainVBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_vertical = 3
+theme_override_constants/separation = 18
 
-[node name="AIStatusInfoLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox"]
-unique_name_in_owner = true
+[node name="BoardColumn" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.74, 0.88, 1)
-theme_override_font_sizes/font_size = 12
-text = "AI OPPONENT  •  Hand: 3/5  •  Deck: 8  •  Energy: 3/3"
-horizontal_alignment = 1
-
-[node name="AIBattleRow" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox"]
-layout_mode = 2
-theme_override_constants/separation = 20
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
 alignment = 1
 
-[node name="AICharPanel" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(340, 174)
+[node name="AIRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn"]
 layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel"]
+[node name="AIInfoPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(168, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
+theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
-[node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 6
 
-[node name="AICharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox"]
+[node name="AITag" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "AI OPPONENT"
+
+[node name="AIStatusInfoLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(126, 146)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.82, 0.92, 1)
+theme_override_font_sizes/font_size = 12
+text = "Hand: 3 / 5
+Deck: 8 cards
+Energy: 3 / 3"
+
+[node name="AITotalAtkPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="AICharTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/AICharArtFrame"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox/AITotalAtkPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox/AITotalAtkPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="AITotalAtkLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox/AITotalAtkPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "TOTAL ATK: 18"
+
+[node name="AIAffinityBadge" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIInfoPanel/Margin/VBox/AITotalAtkPanel/Margin/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.3, 1)
+theme_override_font_sizes/font_size = 11
+text = "1.5x AFFINITY!"
+
+[node name="AICharPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(174, 198)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 7
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="AICharNameLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "Cyber Knight"
+clip_text = true
+
+[node name="AICharAffinityLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "MELEE"
+
+[node name="AICharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 106)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AICharTexture" type="TextureRect" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/AICharArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="AICharEmptyLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/AICharArtFrame"]
+[node name="AICharEmptyLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/AICharArtFrame"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.62, 0.72, 1)
-theme_override_font_sizes/font_size = 12
-text = "NO UNIT"
+theme_override_colors/font_color = Color(0.55, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 11
+text = "KO'D"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox"]
+[node name="HPWrapper" type="Control" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
-alignment = 1
 
-[node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.48, 0.52, 1)
-theme_override_font_sizes/font_size = 11
-text = "AI ACTIVE CHARACTER"
-
-[node name="AICharNameLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
+[node name="AIHPBar" type="ProgressBar" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/HPWrapper"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Cyber Knight"
-
-[node name="AICharAffinityLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "MELEE"
-
-[node name="AIHPBar" type="ProgressBar" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 18)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 max_value = 120.0
 value = 120.0
 show_percentage = false
 
-[node name="AIHPLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
+[node name="AIHPLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox/HPWrapper"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "HP: 120 / 120"
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "120 / 120 HP"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="AIPowerLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AICharPanel/Margin/HBox/StatsVBox"]
+[node name="AIPowerLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AICharPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.85, 0.95, 1)
+theme_override_colors/font_color = Color(0.82, 0.88, 0.98, 1)
+theme_override_font_sizes/font_size = 11
+text = "BASE PWR: 18"
+horizontal_alignment = 1
+
+[node name="AIPlusLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.76, 1)
+theme_override_font_sizes/font_size = 20
+text = "+"
+
+[node name="AIWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(154, 198)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 7
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="AIWeaponNameLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
-text = "Base Power: 18"
+text = "Unarmed"
+clip_text = true
 
-[node name="AIWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow"]
+[node name="AIWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox/HeaderRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(290, 174)
 layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "--"
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
-
-[node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="AIWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox"]
+[node name="AIWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(106, 146)
+custom_minimum_size = Vector2(0, 114)
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="AIWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/AIWeaponArtFrame"]
+[node name="AIWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox/AIWeaponArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="AIWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/AIWeaponArtFrame"]
+[node name="AIWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox/AIWeaponArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.56, 0.68, 1)
+theme_override_colors/font_color = Color(0.45, 0.52, 0.65, 1)
 theme_override_font_sizes/font_size = 11
-text = "EMPTY
-WEAPON"
+text = "WEAPON
+SLOT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="WStatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox"]
+[node name="AIWeaponDmgLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/AIRow/AIWeaponPanel/Margin/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.82, 0.88, 0.98, 1)
+theme_override_font_sizes/font_size = 12
+text = "+0 DMG"
+horizontal_alignment = 1
+
+[node name="CenterFeedVBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn"]
+layout_mode = 2
 theme_override_constants/separation = 5
 alignment = 1
 
-[node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.58, 0.48, 1)
-theme_override_font_sizes/font_size = 11
-text = "AI WEAPON SLOT"
-
-[node name="AIWeaponNameLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Unarmed"
-
-[node name="AIWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "NO WEAPON"
-
-[node name="AIWeaponDmgLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "+0 Weapon DMG"
-
-[node name="AITotalAtkLabel" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
-theme_override_font_sizes/font_size = 14
-text = "TOTAL ATK: 18"
-
-[node name="AIAffinityBadge" type="Label" parent="RootMargin/MainVBox/AIZoneVBox/AIBattleRow/AIWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
-theme_override_font_sizes/font_size = 12
-text = "AFFINITY MATCH! (1.5x)"
-
-[node name="CenterFeedVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-theme_override_constants/separation = 6
-alignment = 1
-
-[node name="AffinityBanner" type="PanelContainer" parent="RootMargin/MainVBox/CenterFeedVBox"]
+[node name="AffinityBanner" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/CenterFeedVBox/AffinityBanner"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox/AffinityBanner"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 3
 
-[node name="AffinityBannerLabel" type="Label" parent="RootMargin/MainVBox/CenterFeedVBox/AffinityBanner/Margin"]
+[node name="AffinityBannerLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox/AffinityBanner/Margin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.92, 0.28, 1)
-theme_override_font_sizes/font_size = 14
-text = "AFFINITY MATCH! 1.5x DAMAGE!"
+theme_override_font_sizes/font_size = 13
+text = ":: AFFINITY MATCH! 1.5x DAMAGE! ::"
 horizontal_alignment = 1
 
-[node name="CombatLogPanel" type="PanelContainer" parent="RootMargin/MainVBox/CenterFeedVBox"]
+[node name="CombatLogPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/CenterFeedVBox/CombatLogPanel"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox/CombatLogPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 5
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 4
 
-[node name="CombatLogLabel" type="Label" parent="RootMargin/MainVBox/CenterFeedVBox/CombatLogPanel/Margin"]
+[node name="CombatLogLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/CenterFeedVBox/CombatLogPanel/Margin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
@@ -313,39 +371,118 @@ theme_override_font_sizes/font_size = 13
 text = "Match started! Summon a Character from your hand (2 EN) and equip a matching Weapon (1 EN)."
 horizontal_alignment = 1
 
-[node name="PlayerBattleRow" type="HBoxContainer" parent="RootMargin/MainVBox"]
+[node name="PlayerRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="PlayerCharPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
+[node name="PlayerInfoPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(340, 178)
+custom_minimum_size = Vector2(168, 0)
 layout_mode = 2
+size_flags_vertical = 4
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
+theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
-[node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 6
 
-[node name="PlayerCharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox"]
+[node name="PlayerTag" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.32, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "YOUR VANGUARD"
+
+[node name="DeckInfoLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(126, 146)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.85, 0.96, 1)
+theme_override_font_sizes/font_size = 12
+text = "Hand: 5 / 5
+Deck: 7 cards"
+
+[node name="PlayerTotalAtkPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PlayerCharTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/PlayerCharArtFrame"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox/PlayerTotalAtkPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox/PlayerTotalAtkPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="PlayerTotalAtkLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox/PlayerTotalAtkPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "TOTAL ATK: 0"
+
+[node name="PlayerAffinityBadge" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerInfoPanel/Margin/VBox/PlayerTotalAtkPanel/Margin/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.3, 1)
+theme_override_font_sizes/font_size = 11
+text = "1.5x AFFINITY!"
+
+[node name="PlayerCharPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(174, 198)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 7
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="PlayerCharNameLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+text = "Empty Slot"
+clip_text = true
+
+[node name="PlayerCharAffinityLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "2 EN"
+
+[node name="PlayerCharArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 106)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerCharTexture" type="TextureRect" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/PlayerCharArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PlayerCharEmptyLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/PlayerCharArtFrame"]
+[node name="PlayerCharEmptyLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/PlayerCharArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.62, 0.82, 1)
@@ -355,78 +492,97 @@ CHARACTER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox"]
+[node name="HPWrapper" type="Control" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
-alignment = 1
 
-[node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.32, 0.88, 1, 1)
-theme_override_font_sizes/font_size = 11
-text = "PLAYER ACTIVE CHARACTER"
-
-[node name="PlayerCharNameLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
+[node name="PlayerHPBar" type="ProgressBar" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/HPWrapper"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "Empty Slot"
-
-[node name="PlayerCharAffinityLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "COST: 2 EN"
-
-[node name="PlayerHPBar" type="ProgressBar" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 18)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 max_value = 120.0
 show_percentage = false
 
-[node name="PlayerHPLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
+[node name="PlayerHPLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox/HPWrapper"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "HP: -- / --"
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 11
+text = "-- / -- HP"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="PlayerPowerLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerCharPanel/Margin/HBox/StatsVBox"]
+[node name="PlayerPowerLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerCharPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.85, 0.95, 1)
+theme_override_colors/font_color = Color(0.82, 0.88, 0.98, 1)
+theme_override_font_sizes/font_size = 11
+text = "BASE PWR: --"
+horizontal_alignment = 1
+
+[node name="PlayerPlusLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.76, 1)
+theme_override_font_sizes/font_size = 20
+text = "+"
+
+[node name="PlayerWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(154, 198)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 7
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeaderRow" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="PlayerWeaponNameLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox/HeaderRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
-text = "Click a Character card below"
+text = "Unarmed"
+clip_text = true
 
-[node name="PlayerWeaponPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
+[node name="PlayerWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox/HeaderRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(290, 178)
 layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "1 EN"
 
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
-
-[node name="HBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="PlayerWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox"]
+[node name="PlayerWeaponArtFrame" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(106, 146)
+custom_minimum_size = Vector2(0, 114)
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="PlayerWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/PlayerWeaponArtFrame"]
+[node name="PlayerWeaponTexture" type="TextureRect" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox/PlayerWeaponArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PlayerWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/PlayerWeaponArtFrame"]
+[node name="PlayerWeaponEmptyLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox/PlayerWeaponArtFrame"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.62, 0.82, 1)
@@ -436,129 +592,99 @@ WEAPON"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="WStatsVBox" type="VBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox"]
+[node name="PlayerWeaponDmgLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/BoardColumn/PlayerRow/PlayerWeaponPanel/Margin/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
+theme_override_colors/font_color = Color(0.82, 0.88, 0.98, 1)
+theme_override_font_sizes/font_size = 12
+text = "+0 DMG"
+horizontal_alignment = 1
+
+[node name="ControlsPanel" type="PanelContainer" parent="RootMargin/MainVBox/ArenaHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(276, 0)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
 alignment = 1
 
-[node name="SlotTitle" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
+[node name="CommandTitle" type="Label" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.32, 0.88, 1, 1)
-theme_override_font_sizes/font_size = 11
-text = "PLAYER WEAPON SLOT"
-
-[node name="PlayerWeaponNameLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Unarmed"
-
-[node name="PlayerWeaponClassLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.76, 0.94, 1)
 theme_override_font_sizes/font_size = 12
-text = "COST: 1 EN"
+text = "COMMAND DECK"
+horizontal_alignment = 1
 
-[node name="PlayerWeaponDmgLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "+0 Weapon DMG"
-
-[node name="PlayerTotalAtkLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.45, 1)
-theme_override_font_sizes/font_size = 14
-text = "TOTAL ATK: 0"
-
-[node name="PlayerAffinityBadge" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/PlayerWeaponPanel/Margin/HBox/WStatsVBox"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.25, 1)
-theme_override_font_sizes/font_size = 12
-text = "AFFINITY MATCH! (1.5x)"
-
-[node name="ControlsPanel" type="PanelContainer" parent="RootMargin/MainVBox/PlayerBattleRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(290, 178)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
-
-[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="EnergyValueLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
+[node name="EnergyValueLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "ENERGY: 3 / 3"
 horizontal_alignment = 1
 
-[node name="EnergyPipsBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
+[node name="EnergyPipsBox" type="HBoxContainer" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="CostHintLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
+[node name="CostHintLabel" type="Label" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.78, 0.9, 1)
+theme_override_colors/font_color = Color(0.65, 0.75, 0.88, 1)
 theme_override_font_sizes/font_size = 11
-text = "Summon: 2 EN  •  Equip: 1 EN  •  Attack: 1 EN"
+text = "Summon / Swap: 2 EN
+Equip Weapon: 1 EN
+Attack (1/Turn): 1 EN"
 horizontal_alignment = 1
 
-[node name="ButtonsHBox" type="HBoxContainer" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="AttackButton" type="Button" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox/ButtonsHBox"]
+[node name="AttackButton" type="Button" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(150, 40)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "ATTACK (1 EN)"
 
-[node name="EndTurnButton" type="Button" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox/ButtonsHBox"]
+[node name="EndTurnButton" type="Button" parent="RootMargin/MainVBox/ArenaHBox/ControlsPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(105, 40)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "End Turn >>"
 
-[node name="DeckInfoLabel" type="Label" parent="RootMargin/MainVBox/PlayerBattleRow/ControlsPanel/Margin/VBox"]
+[node name="HandTrayPanel" type="PanelContainer" parent="RootMargin/MainVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 232)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.78, 0.9, 1)
-theme_override_font_sizes/font_size = 12
-text = "Hand: 5 / 5   |   Deck: 7 cards"
-horizontal_alignment = 1
 
-[node name="HandSectionVBox" type="VBoxContainer" parent="RootMargin/MainVBox"]
+[node name="Margin" type="MarginContainer" parent="RootMargin/MainVBox/HandTrayPanel"]
 layout_mode = 2
-size_flags_vertical = 3
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="RootMargin/MainVBox/HandTrayPanel/Margin"]
+layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="HandTitleLabel" type="Label" parent="RootMargin/MainVBox/HandSectionVBox"]
+[node name="HandTitleLabel" type="Label" parent="RootMargin/MainVBox/HandTrayPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.8, 0.95, 1)
-theme_override_font_sizes/font_size = 12
-text = "YOUR HAND  •  Click a Character card (2 EN) to Summon/Swap or a Weapon card (1 EN) to Equip"
+theme_override_colors/font_color = Color(0.66, 0.78, 0.94, 1)
+theme_override_font_sizes/font_size = 11
+text = "YOUR HAND  •  CLICK A CHARACTER (2 EN) TO SUMMON/SWAP OR A WEAPON (1 EN) TO EQUIP"
 horizontal_alignment = 1
 
-[node name="HandContainer" type="HBoxContainer" parent="RootMargin/MainVBox/HandSectionVBox"]
+[node name="HandContainer" type="HBoxContainer" parent="RootMargin/MainVBox/HandTrayPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
