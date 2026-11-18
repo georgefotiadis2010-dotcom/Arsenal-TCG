@@ -1,0 +1,7 @@
+# Godot 4 local cache
+.godot/
+
+# OS / Editor
+.DS_Store
+*.swp
+*~
